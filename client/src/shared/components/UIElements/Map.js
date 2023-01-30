@@ -2,8 +2,7 @@ import React, { useRef, useEffect } from "react";
 import "./Map.css";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 
-mapboxgl.accessToken =
-  "pk.eyJ1Ijoia291c2hpay12YWR1cmkiLCJhIjoiY2xidDVseTdyMGZlOTNxcW5sZnZicGQ1NiJ9.zQv3f6u8kJYXSfSScZe8yw";
+mapboxgl.accessToken = process.env.REACT_APP_GOOGLE_API_KEY;
 
 const Map = (props) => {
   const mapContainer = useRef(null);

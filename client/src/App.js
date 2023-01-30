@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -14,24 +14,67 @@ import UpdatePlace from "./places/pages/UpdatePlace";
 import Auth from "./user/pages/Auth";
 import { AuthContext } from "./shared/context/auth-context";
 
-const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userId, setUserId] = useState(null);
+let logoutTimer;
 
-  const login = useCallback((uid) => {
-    setIsLoggedIn(true);
+const App = () => {
+  const [token, setToken] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [tokenExpDate, setTokenExpDate] = useState();
+
+  const login = useCallback((uid, token, expireDate) => {
+    setToken(token);
     setUserId(uid);
+    const expirationDate =
+      expireDate || new Date(new Date().getTime() + 1000 * 60 * 60);
+    setTokenExpDate(expirationDate);
+    localStorage.setItem(
+      "userData",
+      JSON.stringify({
+        userId: uid,
+        token: token,
+        expiration: expirationDate.toISOString(),
+      })
+    );
   }, []);
+
+  useEffect(() => {
+    const storedData = JSON.parse(localStorage.getItem("userData"));
+    if (
+      storedData &&
+      storedData.token &&
+      new Date(storedData.expiration) > new Date()
+    ) {
+      login(
+        storedData.userId,
+        storedData.token,
+        new Date(storedData.expiration)
+      );
+    }
+  }, [login]);
+
   const logout = useCallback(() => {
-    setIsLoggedIn(false);
+    setToken(null);
     setUserId(null);
+    setTokenExpDate(null);
+    localStorage.removeItem("userData");
   }, []);
+
+  useEffect(() => {
+    if (token && tokenExpDate) {
+      const remainingTime = tokenExpDate.getTime() - new Date().getTime();
+      logoutTimer = setTimeout(logout, remainingTime);
+    } else {
+      clearTimeout(logoutTimer);
+    }
+  }, [token, logout, tokenExpDate]);
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, userId }}>
+    <AuthContext.Provider
+      value={{ isLoggedIn: !!token, login, logout, userId, token: token }}
+    >
       <Router>
         <MainNavigation />
         <main>
-          {isLoggedIn ? (
+          {token ? (
             <Switch>
               <Route path="/" exact>
                 <Users />

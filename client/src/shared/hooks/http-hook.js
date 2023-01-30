@@ -10,9 +10,7 @@ export const useHttpClient = () => {
       const httpAbortCtrl = new AbortController();
       activeHttpRequest.current.push(httpAbortCtrl);
       try {
-        console.log("1");
         setIsLoading(true);
-        console.log("2");
         const response = await fetch(url, {
           method,
           body,
@@ -20,14 +18,10 @@ export const useHttpClient = () => {
           signal: httpAbortCtrl.signal,
         });
         const responseData = await response.json();
-        console.log("3");
-        console.log(responseData);
         if (!response.ok) {
           throw new Error(responseData.message);
         }
         setIsLoading(false);
-        console.log("4");
-
         return responseData;
       } catch (error) {
         setError(error.message);

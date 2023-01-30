@@ -46,10 +46,16 @@ const NewPlace = () => {
       formdata.append("title", formState.inputs.title.value);
       formdata.append("description", formState.inputs.description.value);
       formdata.append("address", formState.inputs.address.value);
-      formdata.append("creator", auth.userId);
       formdata.append("image", formState.inputs.image.value);
 
-      await sendRequest("http://localhost:5000/api/places", "POST", formdata);
+      await sendRequest(
+        process.env.REACT_APP_BACKEND_URL + "/places",
+        "POST",
+        formdata,
+        {
+          Authorization: "Bearer" + auth.token,
+        }
+      );
       history.push("/");
     } catch (error) {}
   };
