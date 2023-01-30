@@ -1,4 +1,5 @@
 const express = require("express");
+require("dotenv").config();
 const bodyParser = require("body-parser");
 const fs = require("fs");
 const path = require("path");
@@ -48,8 +49,6 @@ app.listen(PORT);
 
 mongoose.set("strictQuery", true);
 mongoose
-  .connect(
-    "mongodb+srv://koushikvaduri:koushik20737@cluster0.ravjl4d.mongodb.net/?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGODB_KEY)
   .then(console.log(`Server is connected to port no ${PORT} `))
   .catch((err) => console.log(err));

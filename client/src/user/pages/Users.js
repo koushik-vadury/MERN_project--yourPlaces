@@ -9,7 +9,6 @@ const Users = () => {
   const [loadedUsers, setLoadedUsers] = useState();
 
   useEffect(() => {
-    console.log(process.env.REACT_APP_BACKEND_URL + "/users");
     const fetchUsers = async () => {
       try {
         const responseData = await sendRequest(
