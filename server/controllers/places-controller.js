@@ -6,6 +6,16 @@ const User = require("../models/user");
 const mongoose = require("mongoose");
 const getCoordsForAddress = require("../util/location");
 
+/////////////////////////////////////////////////////////////////
+const cloudinary = require("cloudinary");
+const getDataUri = require("../util/dataUri");
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+///////////////////////////////////////////////////////////////////
+
 const getPlaceById = async (req, res, next) => {
   const placeId = req.params.pid;
   let place;
@@ -57,6 +67,8 @@ const createPlace = async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+  const fileUri = getDataUri(req.file);
+  const fromCloudinary = await cloudinary.v2.uploader.upload(fileUri.content);
 
   const createPlace = new Place({
     title,
@@ -64,7 +76,7 @@ const createPlace = async (req, res, next) => {
     location: coordinates,
     address,
     creator: req.userData.userId,
-    image: req.file.path,
+    image: fromCloudinary.url,
   });
 
   let user;
@@ -145,7 +157,10 @@ const deletePlace = async (req, res, next) => {
   if (place.creator.id !== req.userData.userId) {
     return next(new HttpError("You are not allowed to delete the place.", 401));
   }
-  const imagePath = place.image;
+
+  const publicID = place.image.match(
+    /\/image\/upload\/v\d+\/(.*?)\.(jpg|jpeg|png|gif)/i
+  )[1];
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -155,12 +170,12 @@ const deletePlace = async (req, res, next) => {
     await sess.commitTransaction();
   } catch (error) {
     return next(
-      new HttpError("Something went wrong, Could not delete place-2", 500)
+      new HttpError("Something went wrong, Could not delete place", 500)
     );
   }
-  fs.unlink(imagePath, (err) => {
-    console.log(err);
-  });
+
+  await cloudinary.v2.uploader.destroy(publicID);
+
   res.status(200).json({ message: "Deleted place." });
 };
 exports.getPlaceById = getPlaceById;

@@ -4,6 +4,16 @@ const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+/////////////////////////////////////////////////////////////////
+const cloudinary = require("cloudinary");
+const getDataUri = require("../util/dataUri");
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+///////////////////////////////////////////////////////////////////
+
 const getUsers = async (req, res, next) => {
   let users;
   try {
@@ -42,11 +52,16 @@ const signUp = async (req, res, next) => {
   } catch (error) {
     return next(new HttpError("Could not create user, Please try again", 500));
   }
+  ///////////////////////////////////
 
+  const fileUri = getDataUri(req.file);
+  const fromCloudinary = await cloudinary.v2.uploader.upload(fileUri.content);
+
+  //////////////////////////////////////////
   const createdUser = new User({
     name,
     email,
-    image: req.file.path,
+    image: fromCloudinary.url,
     password: hashedPassword,
     places: [],
   });

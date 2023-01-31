@@ -123,7 +123,6 @@ const UpdatePlace = () => {
   const placeUpdateSubmitHandler = async (event) => {
     event.preventDefault();
     try {
-      console.table(formState.inputs);
       await sendRequest(
         `${process.env.REACT_APP_BACKEND_URL}/places/${placeId}`,
         "PATCH",
