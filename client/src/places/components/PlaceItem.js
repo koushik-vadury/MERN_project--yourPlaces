@@ -75,39 +75,33 @@ const PlaceItem = (props) => {
           can't be undone thereafter.
         </p>
       </Modal>
-      {isLoading && (
-        <div className="center">
-          <LoadingSpinner />
-        </div>
-      )}
       <li className="place-item">
-        {!isLoading && (
-          <Card className="place-item__content">
-            <div className="place-item__image">
-              <img src={props.image} alt={props.title} />
-            </div>
-            <div className="place-item__info">
-              <h2>{props.title}</h2>
-              <h3>{props.address}</h3>
-              <p>{props.description}</p>
-            </div>
-            <div className="place-item__actions">
-              <Button inverse onClick={openMapHandler}>
-                VIEW ON MAP
-              </Button>
-              {auth.userId === props.creatorId && (
-                <>
-                  <Button to={`/places/${props.id}`} exact>
-                    EDIT
-                  </Button>
-                  <Button danger onClick={showDeleteWarningHandler}>
-                    DELETE
-                  </Button>
-                </>
-              )}
-            </div>
-          </Card>
-        )}
+        <Card className="place-item__content">
+          {isLoading && <LoadingSpinner asOverlay />}
+          <div className="place-item__image">
+            <img src={props.image} alt={props.title} />
+          </div>
+          <div className="place-item__info">
+            <h2>{props.title}</h2>
+            <h3>{props.address}</h3>
+            <p>{props.description}</p>
+          </div>
+          <div className="place-item__actions">
+            <Button inverse onClick={openMapHandler}>
+              VIEW ON MAP
+            </Button>
+            {auth.userId === props.creatorId && (
+              <>
+                <Button to={`/places/${props.id}`} exact>
+                  EDIT
+                </Button>
+                <Button danger onClick={showDeleteWarningHandler}>
+                  DELETE
+                </Button>
+              </>
+            )}
+          </div>
+        </Card>
       </li>
     </>
   );

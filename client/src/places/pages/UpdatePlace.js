@@ -105,7 +105,7 @@ const UpdatePlace = () => {
   if (isLoading) {
     return (
       <div className="center">
-        <LoadingSpinner asOverlay />
+        <LoadingSpinner />
       </div>
     );
   }
@@ -141,6 +141,7 @@ const UpdatePlace = () => {
   return (
     <>
       <ErrorModal error={error} onClear={clearError} />
+
       {!isLoading && loadedPlace && (
         <form className="place-form" onSubmit={placeUpdateSubmitHandler}>
           <Input

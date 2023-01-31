@@ -4,6 +4,8 @@
 
 .place-item__content {
   padding: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .place-item__info {
