@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, Suspense } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -10,11 +10,17 @@ import MainNavigation from "./shared/components/Navigation/MainNavigation";
 import LoadingSpinner from "./shared/components/UIElements/LoadingSpinner";
 import { AuthContext } from "./shared/context/auth-context";
 
-const Users = React.lazy(() => import("./user/pages/Users"));
-const NewPlace = React.lazy(() => import("./places/pages/NewPlace"));
-const UserPlaces = React.lazy(() => import("./places/pages/UserPlaces"));
-const UpdatePlace = React.lazy(() => import("./places/pages/UpdatePlace"));
-const Auth = React.lazy(() => import("./user/pages/Auth"));
+// const Users = React.lazy(() => import("./user/pages/Users"));
+// const NewPlace = React.lazy(() => import("./places/pages/NewPlace"));
+// const UserPlaces = React.lazy(() => import("./places/pages/UserPlaces"));
+// const UpdatePlace = React.lazy(() => import("./places/pages/UpdatePlace"));
+// const Auth = React.lazy(() => import("./user/pages/Auth"));
+
+import Users from "./user/pages/Users";
+import NewPlace from "./places/pages/NewPlace";
+import UserPlaces from "./places/pages/UserPlaces";
+import UpdatePlace from "./places/pages/UpdatePlace";
+import Auth from "./user/pages/Auth";
 
 let logoutTimer;
 
@@ -76,44 +82,36 @@ const App = () => {
       <Router>
         <MainNavigation />
         <main>
-          <Suspense
-            fallback={
-              <div className="center">
-                <LoadingSpinner />
-              </div>
-            }
-          >
-            {token ? (
-              <Switch>
-                <Route path="/" exact>
-                  <Users />
-                </Route>
-                <Route path="/:userId/places" exact>
-                  <UserPlaces />
-                </Route>
-                <Route path="/places/new" exact>
-                  <NewPlace />
-                </Route>
-                <Route path="/places/:placeId" exact>
-                  <UpdatePlace />
-                </Route>
-                <Redirect to="/" />
-              </Switch>
-            ) : (
-              <Switch>
-                <Route path="/" exact>
-                  <Users />
-                </Route>
-                <Route path="/:userId/places" exact>
-                  <UserPlaces />
-                </Route>
-                <Route path="/auth" exact>
-                  <Auth />
-                </Route>
-                <Redirect to="/auth" />
-              </Switch>
-            )}
-          </Suspense>
+          {token ? (
+            <Switch>
+              <Route path="/" exact>
+                <Users />
+              </Route>
+              <Route path="/:userId/places" exact>
+                <UserPlaces />
+              </Route>
+              <Route path="/places/new" exact>
+                <NewPlace />
+              </Route>
+              <Route path="/places/:placeId" exact>
+                <UpdatePlace />
+              </Route>
+              <Redirect to="/" />
+            </Switch>
+          ) : (
+            <Switch>
+              <Route path="/" exact>
+                <Users />
+              </Route>
+              <Route path="/:userId/places" exact>
+                <UserPlaces />
+              </Route>
+              <Route path="/auth" exact>
+                <Auth />
+              </Route>
+              <Redirect to="/auth" />
+            </Switch>
+          )}
         </main>
       </Router>
     </AuthContext.Provider>
